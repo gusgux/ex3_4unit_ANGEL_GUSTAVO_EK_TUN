@@ -5,16 +5,13 @@
  * Author:
  * Modifications:
  */
-
-
-
  #include <webots/robot.h>
  #include <webots/motor.h>
  #include <webots/position_sensor.h>
  #include <webots/distance_sensor.h>
 
  #include <stdio.h>
- #include <math.h>
+
 
 
 
@@ -29,8 +26,11 @@
  enum {
    GO,
    TURN,
+   TURNRIGHT,
+   TURNLEFT,
    FREEWAY,
-   OBSTACLE
+   OBSTACLERIGHT,
+   OBSTACLELEFT,
  };
 
  /*
@@ -42,13 +42,23 @@
   * Auxiliar functions
   */
 
- int checkForObstacles(WbDeviceTag distance_sensor) {
+ int checkForObstacles(WbDeviceTag distance_sensor,WbDeviceTag distance_sensor2,) {
    double distance = wb_distance_sensor_get_value(distance_sensor);
+   double distance2 = wb_distance_sensor_get_value(distance_sensor2);
 
+   if(distance>=distance2){
    if (distance > OBSTACLE_DISTANCE)
      return FREEWAY;
    else
-     return OBSTACLE;
+     return OBSTACLERIGHT;
+   }
+   if(distance2>distance){
+   if (distance2 > OBSTACLE_DISTANCE)
+     return FREEWAY;
+   else
+     return OBSTACLELEFT;
+   }
+
  }
 
  void goRobot(WbDeviceTag *wheels, double velocity) {
@@ -65,6 +75,11 @@
    //double initial_position = wb_position_sensor_get_value()
    wb_motor_set_velocity(wheels[0], 0.3);
    wb_motor_set_velocity(wheels[1], -0.3);
+ }
+ void turnLeft(WbDeviceTag *wheels) {
+   //double initial_position = wb_position_sensor_get_value()
+   wb_motor_set_velocity(wheels[0], -0.3);
+   wb_motor_set_velocity(wheels[1], 0.3);
  }
 
  double getAngleRobot(WbDeviceTag pos_sensor) {
@@ -109,8 +124,7 @@
    wheels[0] = wheel_right;
    wheels[1] = wheel_left;
 
-   wb_motor_set_position(wheel_right, INFINITY);
-   wb_motor_set_position(wheel_left, INFINITY);
+
 
    // Encoder devices
    WbDeviceTag encoder = wb_robot_get_device("encoder1");
@@ -118,7 +132,9 @@
 
    // Distance sensor devices
    WbDeviceTag dist_sensor = wb_robot_get_device("distance_sensor");
+   WbDeviceTag dist_sensor2 = wb_robot_get_device("distance_sensor2");
    wb_distance_sensor_enable(dist_sensor, TIME_STEP);
+   wb_distance_sensor_enable(dist_sensor2, TIME_STEP);
 
    //double ds_value;
    double ps_value;
@@ -133,22 +149,40 @@
     * and leave the loop when the simulation is over
     */
    while (wb_robot_step(TIME_STEP) != -1) {
-  
+
+     wb_motor_set_position(wheel_right, INFINITY);
+     wb_motor_set_position(wheel_left, INFINITY);
+
 
      if (robot_state == GO) {
-       ds_state = checkForObstacles(dist_sensor);
+       ds_state = checkForObstacles(dist_sensor,dist_sensor2);
 
        if (ds_state == FREEWAY) {
          goRobot(wheels, velocity);
          angle = wb_position_sensor_get_value(encoder);
          printf("Angle: %lf\n", angle);
-       } else if (ds_state == OBSTACLE) {
-         robot_state = TURN;
+       } else if (ds_state == OBSTACLELEFT) {
+         robot_state = TURNRIGHT;
          stopRobot(wheels);
          initial_angle_wheel1 = wb_position_sensor_get_value(encoder);
        }
-     } else if (robot_state == TURN) {
+         else if (ds_state == OBSTACLERIGHT) {
+         robot_state = TURNLEFT;
+         stopRobot(wheels);
+         initial_angle_wheel1 = wb_position_sensor_get_value(encoder);
+       }
+     } else if (robot_state ==TURNRIGHT) {
        turnRight(wheels);
+       angle = getAngleRobot(encoder);
+
+       if (angle >= 0.4*PI) {
+         robot_state = GO;
+         stopRobot(wheels);
+         clearAngleRobot();
+       }
+     }
+       else if (robot_state ==TURNRIGHT) {
+       turnLeft(wheels);
        angle = getAngleRobot(encoder);
 
        if (angle >= 0.4*PI) {

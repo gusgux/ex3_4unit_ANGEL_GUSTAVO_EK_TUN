@@ -1,25 +1,4 @@
-#VRML_SIM R2019b utf8
-WorldInfo {
-  contactProperties [
-    ContactProperties {
-      material1 "robotBody"
-      material2 "floor"
-      coulombFriction [
-        0
-      ]
-    }
-  ]
-}
-Viewpoint {
-  orientation 0.7953900832655677 -0.5864029844344217 -0.15325193404716514 5.648268076890394
-  position 0.5240906432135338 0.410339495604823 0.5741194281085839
-}
-TexturedBackground {
-}
-TexturedBackgroundLight {
-}
-Floor {
-}
+#VRML_OBJ R2019b utf8
 Robot {
   translation 0 0.075 0
   children [
@@ -27,7 +6,7 @@ Robot {
       children [
         DEF ROBOT_BODY Shape {
           appearance PBRAppearance {
-            baseColor 0.933333 0.933333 0.9254899999999999
+            baseColor 0.8 0 0
           }
           geometry DEF G_BODY Box {
             size 0.25 0.07 0.1
@@ -96,7 +75,7 @@ Robot {
       ]
       endPoint DEF WHEEL2 Solid {
         translation -0.05000464053569955 -4.475340648047137e-06 -0.06000114527398893
-        rotation -0.9999897819929816 0.00319650948351654 -0.0031965976835833165 1.5708098619478401
+        rotation -0.9999897819929817 0.0031965094835165403 -0.003196597683583317 1.5708098619478401
         children [
           USE SH_WHEEL
         ]
@@ -107,14 +86,14 @@ Robot {
       }
     }
     DistanceSensor {
-      translation 0.125 0 0.03
+      translation 0.125 0 0
       children [
         Shape {
           appearance PBRAppearance {
-            baseColor 0.7999999999999999 0 0
+            baseColor 0.9294117647058824 0.8313725490196079 0
           }
-          geometry Sphere {
-            radius 0.01
+          geometry Box {
+            size 0.02 0.01 0.01
           }
         }
       ]
@@ -122,27 +101,7 @@ Robot {
       lookupTable [
         0 0 0
         0.02 0 0
-        5 1659 0
-      ]
-      resolution 1
-    }
-    DistanceSensor {
-      translation 0.125 0 -0.03
-      children [
-        Shape {
-          appearance PBRAppearance {
-            baseColor 0.7999999999999999 0 0
-          }
-          geometry Sphere {
-            radius 0.01
-          }
-        }
-      ]
-      name "distance_sensor2"
-      lookupTable [
-        0 0 0
-        0.02 0 0
-        5 1659 0
+        11 1023 0
       ]
       resolution 1
     }
@@ -155,19 +114,5 @@ Robot {
       0 0 0
     ]
   }
-  controller "ROBOT_EX34"
-}
-Solid {
-  translation 0.741772 0.049999999999999996 0.004287
-  children [
-    Shape {
-      appearance PBRAppearance {
-        baseColor 0.3607843137254902 0.20784313725490197 0.4
-      }
-      geometry DEF G_OBSTACLE1 Box {
-        size 0.5 0.5 0.5
-      }
-    }
-  ]
-  boundingObject USE G_OBSTACLE1
+  controller "robot1"
 }

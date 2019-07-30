@@ -1,0 +1,125 @@
+#VRML_SIM R2019b utf8
+WorldInfo {
+}
+Viewpoint {
+  orientation -0.6931032800836722 0.6931032800836722 0.1980295085953349 0.75
+  position 1.2 1.6 2.3
+}
+TexturedBackground {
+}
+TexturedBackgroundLight {
+}
+Floor {
+}
+Robot {
+  translation 0 0.08 0
+  rotation 1 0 0 0
+  children [
+    DEF GR_BODY Group {
+      children [
+        DEF ROBOT_BODY Shape {
+          appearance PBRAppearance {
+            baseColor 0.9372549019607843 0.1607843137254902 0.1607843137254902
+            roughness 1
+            metalness 0
+          }
+          geometry DEF G_BODY Box {
+            size 0.25 0.07 0.1
+          }
+        }
+        Transform {
+          translation 0.11 -0.05 0
+          children [
+            Shape {
+              appearance PBRAppearance {
+                baseColor 0 0 0
+                roughness 1
+                metalness 0
+              }
+              geometry Sphere {
+                radius 0.03
+              }
+            }
+          ]
+        }
+      ]
+    }
+    DEF WHEEL_JOINT HingeJoint {
+      jointParameters HingeJointParameters {
+        axis 0 0 1
+        anchor -0.05 0 0.06
+      }
+      device [
+        PositionSensor {
+          name "encoder1"
+          resolution 0.9817
+        }
+        RotationalMotor {
+          name "motor_right"
+          maxVelocity 52.3598
+        }
+      ]
+      endPoint DEF WHEEL_1 Solid {
+        translation -0.05 0 0.06
+        rotation 0.40779432835262774 0.6453835623758893 -0.6458977033388769 3.9165647108573847
+        children [
+          DEF SHAPE_WHEEL Shape {
+            appearance PBRAppearance {
+              baseColor 0 0 0
+              roughness 1
+              metalness 0
+            }
+            geometry DEF G_WHEEL Cylinder {
+              height 0.02
+              radius 0.075
+            }
+          }
+        ]
+        boundingObject USE G_WHEEL
+        physics Physics {
+        }
+      }
+    }
+    DEF WHEEL_2_JOINT HingeJoint {
+      jointParameters HingeJointParameters {
+        axis 0 0 1
+        anchor -0.05 0 -0.06
+      }
+      device [
+        PositionSensor {
+          name "encoder2"
+          resolution 0.9817
+        }
+        RotationalMotor {
+          name "motor_left"
+          maxVelocity 52.3598
+        }
+      ]
+      endPoint Solid {
+        translation -0.05 0 -0.06
+        rotation 1 0 0 1.57
+        children [
+          USE SHAPE_WHEEL
+        ]
+        name "solid(1)"
+        boundingObject USE SHAPE_WHEEL
+        physics Physics {
+        }
+      }
+    }
+    DistanceSensor {
+      translation 0.12 0 0
+      name "distance_sensor"
+      lookupTable [
+        0 0 0
+        0.03 1000 0
+      ]
+      aperture 0.5235
+      resolution 1
+    }
+  ]
+  boundingObject USE GR_BODY
+  physics Physics {
+  }
+  controller "u2_wp_EK_ANGEL"
+}
